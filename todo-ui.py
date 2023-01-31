@@ -48,6 +48,7 @@ class AddTodoGUI:
         self.master = master
         self.master.title("Add Todo")
         self.master.geometry("400x230")
+        self.master.attributes("-topmost", True)
         self.master.resizable(False, False)
         self.master.columnconfigure(0, weight=1, pad=1)
         self.master.columnconfigure(1, weight=1, pad=1)
@@ -116,6 +117,7 @@ class AddTodoGUI:
         self.master = master
         self.master.title("Delete ToDo")
         self.master.geometry("330x100")
+        self.master.attributes("-topmost", True)
         self.master.resizable(False, False)
 
         todo_number_label = ttk.Label(self.master, text="Enter the ToDo Number:", width=22)
@@ -165,6 +167,7 @@ class MarkStatusGui:
         self.master = master
         self.master.title("Mark ToDo Status")
         self.master.geometry("380x140")
+        self.master.attributes("-topmost", True)
         self.master.resizable(False, False)
 
         todo_number_label = ttk.Label(self.master, text="Enter the ToDo Number:", width=22)
@@ -184,7 +187,30 @@ class MarkStatusGui:
         mark_button.grid(row=2, columnspan=3, pady=20)
 
     def mark(self):
-        pass
+        try:
+            todo_number = int(self.todo_number.get())
+        except ValueError:
+            messagebox.showerror("Error", "Invalid input. Please enter a number.")
+            return
+
+        try:
+            with open("todos.json", "r") as file:
+                todos = json.load(file)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "File not found")
+            return
+
+        if todo_number > len(todos) or todo_number < 1:
+            messagebox.showerror("Error", "Invalid ToDo number")
+            return
+
+        todos[todo_number - 1]["status"] = self.status_var.get()
+
+        with open("todos.json", "w") as file:
+            json.dump(todos, file)
+
+        messagebox.showinfo("Success", "Status marked successfully")
+        self.master.destroy()
 
 class TodoListApp:
     def __init__(self, master):
