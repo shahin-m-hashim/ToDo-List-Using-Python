@@ -1,2 +1,3 @@
 # ToDo-List-Using-Python
-The ToDo application allows users to manage and keep track of their tasks and responsibilities. 
+
+The ToDo application allows users to manage and keep track of their tasks and responsibilities. With this application, users can add new ToDos, delete existing ones, mark them as done or not done, and view all their ToDos in one place. The application uses a graphical user interface (GUI) built with the Tkinter library in Python, making it user-friendly and easy to navigate. The ToDos are stored in a JSON file, which allows for easy retrieval and manipulation of data. This application is a helpful tool for individuals looking to stay organized and on top of their responsibilities.
