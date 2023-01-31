@@ -30,7 +30,8 @@ class RightFrame(ttk.Frame):
         AddTodoGUI(add_todo_gui)
 
     def delete_todo(self):
-        pass
+        delete_todo_gui=tk.Toplevel(self)
+        DeleteTodoGui(delete_todo_gui)
     
 class AddTodoGUI:
     def __init__(self, master):
@@ -62,6 +63,24 @@ class AddTodoGUI:
 
         self.save_button = ttk.Button(self.master, text="Save", width=20)
         self.save_button.grid(row=3, columnspan=2, pady=10)
+        
+ class DeleteTodoGui():
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Delete ToDo")
+        self.master.geometry("330x100")
+        self.master.resizable(False, False)
+
+        todo_number_label = ttk.Label(self.master, text="Enter the ToDo Number:", width=22)
+        todo_number_label.grid(row=0, column=0, sticky="w", pady=5,padx=5)
+        self.todo_number = ttk.Entry(self.master, width=15)
+        self.todo_number.grid(row=0, column=1, padx=5)
+
+        delete_button = ttk.Button(self.master, text="Delete", command=self.delete)
+        delete_button.grid(row=3, columnspan=2, pady=10)
+
+    def delete(self):
+        pass
 
 class TodoListApp:
     def __init__(self, master):
