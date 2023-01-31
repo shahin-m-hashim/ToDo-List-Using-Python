@@ -1,5 +1,8 @@
+import json
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
+from datetime import datetime
 
 class LeftFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
@@ -68,8 +71,45 @@ class AddTodoGUI:
         self.due_date = ttk.Entry(self.master, width=40,)
         self.due_date.grid(row=2, column=1,padx=5)
 
-        self.save_button = ttk.Button(self.master, text="Save", width=20)
+        self.save_button = ttk.Button(self.master, text="Save",command=self.save, width=20)
         self.save_button.grid(row=3, columnspan=2, pady=10)
+        
+    def save(self):
+
+        if not self.todo_name.get().strip():
+            messagebox.showerror("Error", "Please enter a name for the ToDo.")
+            return
+        if not self.due_date.get():
+            messagebox.showerror("Error", "Please enter a due date")
+            return
+
+        due_date = self.due_date.get()
+        try:
+            due_date = datetime.strptime(due_date, '%d/%m/%Y')
+        except ValueError:
+            messagebox.showerror("Invalid Date", "The date must be in the format DD/MM/YYYY")
+            return           
+
+        todo = {
+            "id": 1,
+            "todo_name": self.todo_name.get(),
+            "todo_description": self.todo_description.get("1.0", "end-1c"),
+            "due_date": self.due_date.get(),
+        }
+
+        try:
+            with open("todos.json", "r") as file:
+                todos = json.load(file)
+                todo["id"] = len(todos) + 1
+        except FileNotFoundError:
+            todos = []
+
+        todos.append(todo)
+
+        with open("todos.json", "w") as file:
+            json.dump(todos, file)
+
+        self.master.destroy()
         
  class DeleteTodoGui():
     def __init__(self, master):
@@ -87,7 +127,38 @@ class AddTodoGUI:
         delete_button.grid(row=3, columnspan=2, pady=10)
 
     def delete(self):
-        pass
+        todo_number_str = self.todo_number.get()
+        if not todo_number_str:
+            messagebox.showerror("Error", "Please enter a ToDo number")
+            return
+
+        try:
+            todo_number = int(todo_number_str)
+        except ValueError:
+            messagebox.showerror("Error", "Invalid ToDo number")
+            return
+
+        try:
+            with open("todos.json", "r") as file:
+                todos = json.load(file)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "File not found")
+            return
+
+        if todo_number > len(todos) or todo_number < 1:
+            messagebox.showerror("Error", "Invalid ToDo number")
+            return
+
+        todos.pop(todo_number - 1)
+
+        for i in range(len(todos)):
+            todos[i]["id"] = i + 1
+
+        with open("todos.json", "w") as file:
+            json.dump(todos, file)
+
+        messagebox.showinfo("Success", "ToDo deleted successfully")
+        self.master.destroy()
     
 class MarkStatusGui:
     def __init__(self, master):
