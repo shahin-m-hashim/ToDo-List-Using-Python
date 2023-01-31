@@ -60,7 +60,7 @@ class AddTodoGUI:
         self.due_date = ttk.Entry(self.master, width=40,)
         self.due_date.grid(row=2, column=1,padx=5)
 
-        self.save_button = ttk.Button(self.master, text="Save", command=self.save, width=20)
+        self.save_button = ttk.Button(self.master, text="Save", width=20)
         self.save_button.grid(row=3, columnspan=2, pady=10)
 
 class TodoListApp:
