@@ -22,6 +22,9 @@ class RightFrame(ttk.Frame):
 
         self.delete_button = ttk.Button(self, text="Delete Todo", command=self.delete_todo)
         self.delete_button.grid(sticky="we")
+        
+        self.mark_status_button = ttk.Button(self, text="Mark Status", command=self.mark_status)
+        self.mark_status_button.grid(sticky="we")
        
         self.columnconfigure(0, weight=1)
 
@@ -32,6 +35,10 @@ class RightFrame(ttk.Frame):
     def delete_todo(self):
         delete_todo_gui=tk.Toplevel(self)
         DeleteTodoGui(delete_todo_gui)
+        
+    def mark_status(self):
+        mark_status_gui = tk.Toplevel(self)
+        MarkStatusGui(mark_status_gui)
     
 class AddTodoGUI:
     def __init__(self, master):
@@ -80,6 +87,32 @@ class AddTodoGUI:
         delete_button.grid(row=3, columnspan=2, pady=10)
 
     def delete(self):
+        pass
+    
+class MarkStatusGui:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Mark ToDo Status")
+        self.master.geometry("380x140")
+        self.master.resizable(False, False)
+
+        todo_number_label = ttk.Label(self.master, text="Enter the ToDo Number:", width=22)
+        todo_number_label.grid(row=0, column=0, sticky="w", pady=5,padx=5)
+        self.todo_number = ttk.Entry(self.master, width=15)
+        self.todo_number.grid(row=0, column=1, padx=5)
+
+        todo_number_label = ttk.Label(self.master, text="Mark The Entered ToDo As:", width=25)
+        todo_number_label.grid(row=1, column=0, sticky="w", pady=5,padx=5)
+
+        self.status_var = tk.StringVar()
+        self.status_var.set("Done")
+        status_menu = ttk.OptionMenu(self.master, self.status_var, "Not Done", "Done")
+        status_menu.grid(row=1, column=1, pady=1)
+
+        mark_button = ttk.Button(self.master, text="Save", command=self.mark)
+        mark_button.grid(row=2, columnspan=3, pady=20)
+
+    def mark(self):
         pass
 
 class TodoListApp:
