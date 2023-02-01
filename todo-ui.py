@@ -25,6 +25,9 @@ class RightFrame(ttk.Frame):
 
         self.delete_button = ttk.Button(self, text="Delete Todo", command=self.delete_todo)
         self.delete_button.grid(sticky="we")
+ 
+        self.mark_status_button = ttk.Button(self, text="Set Priority", command=self.set_priority)
+        self.mark_status_button.grid(sticky="we")
         
         self.mark_status_button = ttk.Button(self, text="Mark Status", command=self.mark_status)
         self.mark_status_button.grid(sticky="we")
@@ -41,6 +44,10 @@ class RightFrame(ttk.Frame):
     def delete_todo(self):
         delete_todo_gui=tk.Toplevel(self)
         DeleteTodoGui(delete_todo_gui)
+
+    def set_priority(self):
+        set_priority_gui = tk.Toplevel(self)
+        SetPriorityGui(set_priority_gui)
         
     def mark_status(self):
         mark_status_gui = tk.Toplevel(self)
@@ -174,6 +181,63 @@ class DeleteTodoGui():
             json.dump(todos, file)
 
         messagebox.showinfo("Success", "ToDo deleted successfully")
+        self.master.destroy()
+        
+class SetPriorityGui:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Mark ToDo Priority")
+        self.master.geometry("380x140")
+        self.master.attributes("-topmost", True)
+        self.master.resizable(False, False)
+
+        todo_number_label = ttk.Label(self.master, text="Enter the ToDo Number:", width=22)
+        todo_number_label.grid(row=0, column=0, sticky="w", pady=5,padx=5)
+        self.todo_number = ttk.Entry(self.master, width=15)
+        self.todo_number.grid(row=0, column=1, padx=5)
+
+        todo_priority_label = ttk.Label(self.master, text="Set Priority Of ToDo:", width=25)
+        todo_priority_label.grid(row=1, column=0, sticky="w", pady=5,padx=5)a
+        self.todo_priority = ttk.Entry(self.master, width=15)
+        self.todo_priority.grid(row=1, column=1, padx=5)
+
+        mark_button = ttk.Button(self.master, text="Save", command=self.set)
+        mark_button.grid(row=2, columnspan=3, pady=20)
+
+    def set(self):
+        try:
+            todo_number = int(self.todo_number.get())
+        except ValueError:
+            messagebox.showerror("Error", "Invalid input. Please enter a number.", parent=self.master)
+            self.master.lift()
+            return
+
+        try:
+            with open("todos.json", "r") as file:
+                todos = json.load(file)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "File not found",parent=self.master)
+            self.master.lift()
+            return
+
+        if todo_number > len(todos) or todo_number < 1:
+            messagebox.showerror("Error", "Invalid ToDo number",parent=self.master)
+            self.master.lift()
+            return
+
+        try:
+            todo_priority = int(self.todo_priority.get())
+        except ValueError:
+            messagebox.showerror("Error", "Invalid input. Please enter a number.",parent=self.master)
+            self.master.lift()
+            return
+
+        todos[todo_number - 1]["priority"] = todo_priority
+
+        with open("todos.json", "w") as file:
+            json.dump(todos, file)
+
+        messagebox.showinfo("Success", "Priority set successfully")
         self.master.destroy()
     
 class MarkStatusGui:
