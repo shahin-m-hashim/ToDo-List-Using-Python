@@ -28,6 +28,9 @@ class RightFrame(ttk.Frame):
         
         self.mark_status_button = ttk.Button(self, text="Mark Status", command=self.mark_status)
         self.mark_status_button.grid(sticky="we")
+        
+        self.search_button = ttk.Button(self, text="Search Todo", command=self.search_todo)
+        self.search_button.grid(sticky="we")        
        
         self.columnconfigure(0, weight=1)
 
@@ -42,6 +45,10 @@ class RightFrame(ttk.Frame):
     def mark_status(self):
         mark_status_gui = tk.Toplevel(self)
         MarkStatusGui(mark_status_gui)
+        
+    def search_todo(self):
+        search_todo_gui=tk.Toplevel(self)
+        SearchTodoGui(search_todo_gui)
     
 class AddTodoGUI:
     def __init__(self, master):
@@ -112,7 +119,7 @@ class AddTodoGUI:
 
         self.master.destroy()
         
- class DeleteTodoGui():
+class DeleteTodoGui():
     def __init__(self, master):
         self.master = master
         self.master.title("Delete ToDo")
@@ -212,6 +219,40 @@ class MarkStatusGui:
         messagebox.showinfo("Success", "Status marked successfully")
         self.master.destroy()
 
+class SearchTodoGui:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Search ToDo")
+        self.master.geometry("330x100")
+        self.master.attributes("-topmost", True)
+        self.master.resizable(False, False)
+
+        ttk.Label(self.master, text="Enter ToDo Name:").grid(row=0, column=0, sticky="w", pady=5, padx=5)
+        self.todo_name = ttk.Entry(self.master, width=20)
+        self.todo_name.grid(row=0, column=1, padx=10,pady=5)
+
+        ttk.Button(self.master, text="Search", command=self.search).grid(row=2, columnspan=3, pady=20)
+
+    def search(self):
+        try:
+            with open("todos.json", "r") as file:
+                todos = json.load(file)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "File not found")
+            return
+
+        todo_name = self.todo_name.get()
+        for todo in todos:
+            if todo["todo_name"] == todo_name:
+                message = f"ToDo Name: {todo['todo_name']}\nToDo Description: {todo['todo_description']}\nDue Date: {todo['due_date']}"
+                if "status" in todo:
+                    message += f"\nStatus: {todo['status']}"
+                messagebox.showinfo("Results", message)
+                self.master.destroy()
+                return
+        messagebox.showerror("Error", "No results found")
+        self.master.destroy()        
+        
 class TodoListApp:
     def __init__(self, master):
         self.master = master
