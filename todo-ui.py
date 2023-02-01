@@ -85,17 +85,20 @@ class AddTodoGUI:
     def save(self):
 
         if not self.todo_name.get().strip():
-            messagebox.showerror("Error", "Please enter a name for the ToDo.")
+            messagebox.showerror("Error", "Please enter a name for the ToDo.", parent=self.master)
+            self.master.lift()
             return
         if not self.due_date.get():
-            messagebox.showerror("Error", "Please enter a due date")
+            messagebox.showerror("Error", "Please enter a due date", parent=self.master)
+            self.master.lift()
             return
 
         due_date = self.due_date.get()
         try:
             due_date = datetime.strptime(due_date, '%d/%m/%Y')
         except ValueError:
-            messagebox.showerror("Invalid Date", "The date must be in the format DD/MM/YYYY")
+            messagebox.showerror("Invalid Date", "The date must be in the format DD/MM/YYYY", parent=self.master)
+            self.master.lift()
             return           
 
         todo = {
@@ -138,24 +141,28 @@ class DeleteTodoGui():
     def delete(self):
         todo_number_str = self.todo_number.get()
         if not todo_number_str:
-            messagebox.showerror("Error", "Please enter a ToDo number")
+            messagebox.showerror("Error", "Please enter a ToDo number", parent=self.master)
+            self.master.lift()
             return
 
         try:
             todo_number = int(todo_number_str)
         except ValueError:
-            messagebox.showerror("Error", "Invalid ToDo number")
+            messagebox.showerror("Error", "Invalid ToDo number", parent=self.master)
+            self.master.lift()
             return
 
         try:
             with open("todos.json", "r") as file:
                 todos = json.load(file)
         except FileNotFoundError:
-            messagebox.showerror("Error", "File not found")
+            messagebox.showerror("Error", "File not found", parent=self.master)
+            self.master.lift()
             return
 
         if todo_number > len(todos) or todo_number < 1:
-            messagebox.showerror("Error", "Invalid ToDo number")
+            messagebox.showerror("Error", "Invalid ToDo number", parent=self.master)
+            self.master.lift()
             return
 
         todos.pop(todo_number - 1)
@@ -197,18 +204,21 @@ class MarkStatusGui:
         try:
             todo_number = int(self.todo_number.get())
         except ValueError:
-            messagebox.showerror("Error", "Invalid input. Please enter a number.")
+            messagebox.showerror("Error", "Invalid input. Please enter a number.", parent=self.master)
+            self.master.lift()
             return
 
         try:
             with open("todos.json", "r") as file:
                 todos = json.load(file)
         except FileNotFoundError:
-            messagebox.showerror("Error", "File not found")
+            messagebox.showerror("Error", "File not found", parent=self.master)
+            self.master.lift()
             return
 
         if todo_number > len(todos) or todo_number < 1:
-            messagebox.showerror("Error", "Invalid ToDo number")
+            messagebox.showerror("Error", "Invalid ToDo number", parent=self.master)
+            self.master.lift()
             return
 
         todos[todo_number - 1]["status"] = self.status_var.get()
@@ -238,7 +248,8 @@ class SearchTodoGui:
             with open("todos.json", "r") as file:
                 todos = json.load(file)
         except FileNotFoundError:
-            messagebox.showerror("Error", "File not found")
+            messagebox.showerror("Error", "File not found", parent=self.master)
+            self.master.lift()
             return
 
         todo_name = self.todo_name.get()
@@ -250,7 +261,8 @@ class SearchTodoGui:
                 messagebox.showinfo("Results", message)
                 self.master.destroy()
                 return
-        messagebox.showerror("Error", "No results found")
+        messagebox.showerror("Error", "No results found", parent=self.master)
+        self.master.lift()
         self.master.destroy()        
         
 class TodoListApp:
