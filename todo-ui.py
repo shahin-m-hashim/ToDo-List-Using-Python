@@ -9,12 +9,48 @@ class LeftFrame(ttk.Frame):
         super().__init__(master, **kwargs)
         self.grid(row=0, column=0, sticky="nswe")
 
-        self.todo_list = ttk.Treeview(self)
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("Treeview.Heading", font=("Arial 14 bold"))
+        style.configure("Treeview", 
+            font=('Comic Sans MS', 12),
+            rowheight=45,
+            foreground="red", 
+            background="yellow",
+            fieldbackground="yellow") #set row gap and color
+        
+        self.todo_list = ttk.Treeview(self, columns=("Name", "Due Date", "Priority", "Status"))
         self.todo_list.grid(sticky="nswe")
+        self.todo_list.column("#0", anchor="center")
+        self.todo_list.column("Name", anchor="center")
+        self.todo_list.column("Due Date", anchor="center")
+        self.todo_list.column("Priority", anchor="center")
+        self.todo_list.column("Status", anchor="center")
+        self.todo_list.heading("#0", text="ToDo ID")
+        self.todo_list.heading("Name", text="ToDo Name")
+        self.todo_list.heading("Due Date", text="Due Date")
+        self.todo_list.heading("Priority", text="Priority")
+        self.todo_list.heading("Status", text="Status")
+        self.todo_list.rowconfigure(0,minsize=10)
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
+        self.load_todos()
+
+    def load_todos(self):
+        try:
+            with open("todos.json", "r") as file:
+                todos = json.load(file)
+        except FileNotFoundError:
+            self.todo_list.insert("", "end", text="You don't have any ToDo's yet, wish to make some?")
+            return
+
+        for i, todo in enumerate(todos):
+            priority = todo.get("priority", "N/A")  # add default value
+            status = todo.get("status", "N/A")  # add default value
+            self.todo_list.insert("", "end", text=f"ToDo {i+1}", values=(todo["todo_name"], todo["due_date"], priority, status))
+            
 class RightFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -76,18 +112,13 @@ class AddTodoGUI:
         self.todo_name = ttk.Entry(self.master, width=40)
         self.todo_name.grid(row=0, column=1,padx=5)
 
-        todo_description_label = ttk.Label(self.master, text="ToDo Description:", width=25)
-        todo_description_label.grid(row=1, column=0, sticky="w",pady=5)
-        self.todo_description = tk.Text(self.master, width=30, height=5)
-        self.todo_description.grid(row=1, column=1,padx=4)
-
         due_date_label = ttk.Label(self.master, text="Due Date:", width=25)
-        due_date_label.grid(row=2, column=0, sticky="w",pady=5)
+        due_date_label.grid(row=1, column=0, sticky="w",pady=5)
         self.due_date = ttk.Entry(self.master, width=40,)
-        self.due_date.grid(row=2, column=1,padx=5)
+        self.due_date.grid(row=1, column=1,padx=5)
 
         self.save_button = ttk.Button(self.master, text="Save",command=self.save, width=20)
-        self.save_button.grid(row=3, columnspan=2, pady=10)
+        self.save_button.grid(row=2, columnspan=2, pady=10)
         
     def save(self):
 
@@ -197,7 +228,7 @@ class SetPriorityGui:
         self.todo_number.grid(row=0, column=1, padx=5)
 
         todo_priority_label = ttk.Label(self.master, text="Set Priority Of ToDo:", width=25)
-        todo_priority_label.grid(row=1, column=0, sticky="w", pady=5,padx=5)a
+        todo_priority_label.grid(row=1, column=0, sticky="w", pady=5,padx=5)
         self.todo_priority = ttk.Entry(self.master, width=15)
         self.todo_priority.grid(row=1, column=1, padx=5)
 
@@ -333,9 +364,8 @@ class TodoListApp:
     def __init__(self, master):
         self.master = master
         self.master.title("Todo List")
-        self.master.geometry("800x600")
+        self.master.geometry("1250x600")
         self.master.columnconfigure(0, weight=3)
-        self.master.columnconfigure(1, weight=1)
         self.master.rowconfigure(0, weight=1)
 
         self.left_frame = LeftFrame(self.master)
