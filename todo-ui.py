@@ -495,7 +495,7 @@ class TodoListApp:
     def __init__(self, master):
         self.master = master
         self.master.title("Todo List")
-        self.master.geometry("1250x600")
+        self.master.geometry("1300x700")
         self.master.columnconfigure(0, weight=3)
         self.master.columnconfigure(1, weight=1)  # added line
         self.master.rowconfigure(0, weight=1)
