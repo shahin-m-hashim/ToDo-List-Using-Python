@@ -31,7 +31,6 @@ class LeftFrame(ttk.Frame):
         self.todo_list.heading("Due Date", text="Due Date")
         self.todo_list.heading("Priority", text="Priority")
         self.todo_list.heading("Status", text="Status")
-        self.todo_list.rowconfigure(0,minsize=10)
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
@@ -50,7 +49,7 @@ class LeftFrame(ttk.Frame):
             priority = todo.get("priority", "N/A")  # add default value
             status = todo.get("status", "N/A")  # add default value
             self.todo_list.insert("", "end", text=f"ToDo {i+1}", values=(todo["todo_name"], todo["due_date"], priority, status))
-            
+
 class RightFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -61,16 +60,19 @@ class RightFrame(ttk.Frame):
 
         self.delete_button = ttk.Button(self, text="Delete Todo", command=self.delete_todo)
         self.delete_button.grid(sticky="we")
- 
+
         self.mark_status_button = ttk.Button(self, text="Set Priority", command=self.set_priority)
         self.mark_status_button.grid(sticky="we")
-        
+
         self.mark_status_button = ttk.Button(self, text="Mark Status", command=self.mark_status)
         self.mark_status_button.grid(sticky="we")
-        
+
         self.search_button = ttk.Button(self, text="Search Todo", command=self.search_todo)
-        self.search_button.grid(sticky="we")        
-       
+        self.search_button.grid(sticky="we")
+
+        self.edit_button = ttk.Button(self, text="Update Todo", command=self.update_todo)
+        self.edit_button.grid(sticky="we")
+
         self.columnconfigure(0, weight=1)
 
     def add_todo(self):
@@ -84,20 +86,24 @@ class RightFrame(ttk.Frame):
     def set_priority(self):
         set_priority_gui = tk.Toplevel(self)
         SetPriorityGui(set_priority_gui)
-        
+
     def mark_status(self):
         mark_status_gui = tk.Toplevel(self)
         MarkStatusGui(mark_status_gui)
-        
+    
     def search_todo(self):
         search_todo_gui=tk.Toplevel(self)
         SearchTodoGui(search_todo_gui)
-    
+
+    def update_todo(self):
+        edit_todo_gui=tk.Toplevel(self)
+        EditTodoGui(edit_todo_gui)
+
 class AddTodoGUI:
     def __init__(self, master):
         self.master = master
         self.master.title("Add Todo")
-        self.master.geometry("400x230")
+        self.master.geometry("400x150")
         self.master.attributes("-topmost", True)
         self.master.resizable(False, False)
         self.master.columnconfigure(0, weight=1, pad=1)
@@ -117,9 +123,9 @@ class AddTodoGUI:
         self.due_date = ttk.Entry(self.master, width=40,)
         self.due_date.grid(row=1, column=1,padx=5)
 
-        self.save_button = ttk.Button(self.master, text="Save",command=self.save, width=20)
+        self.save_button = ttk.Button(self.master, text="Save", command=self.save, width=20)
         self.save_button.grid(row=2, columnspan=2, pady=10)
-        
+
     def save(self):
 
         if not self.todo_name.get().strip():
@@ -142,7 +148,6 @@ class AddTodoGUI:
         todo = {
             "id": 1,
             "todo_name": self.todo_name.get(),
-            "todo_description": self.todo_description.get("1.0", "end-1c"),
             "due_date": self.due_date.get(),
         }
 
@@ -158,8 +163,11 @@ class AddTodoGUI:
         with open("todos.json", "w") as file:
             json.dump(todos, file)
 
+
+        messagebox.showinfo("Success", "ToDo Added successfully", parent=self.master)
+        self.master.lift()
         self.master.destroy()
-        
+
 class DeleteTodoGui():
     def __init__(self, master):
         self.master = master
@@ -211,9 +219,63 @@ class DeleteTodoGui():
         with open("todos.json", "w") as file:
             json.dump(todos, file)
 
-        messagebox.showinfo("Success", "ToDo deleted successfully")
+        messagebox.showinfo("Success", "ToDo deleted successfully", parent=self.master)
+        self.master.lift()
         self.master.destroy()
-        
+
+class MarkStatusGui:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Mark ToDo Status")
+        self.master.geometry("380x140")
+        self.master.attributes("-topmost", True)
+        self.master.resizable(False, False)
+
+        todo_number_label = ttk.Label(self.master, text="Enter the ToDo Number:", width=22)
+        todo_number_label.grid(row=0, column=0, sticky="w", pady=5,padx=5)
+        self.todo_number = ttk.Entry(self.master, width=15)
+        self.todo_number.grid(row=0, column=1, padx=5)
+
+        todo_number_label = ttk.Label(self.master, text="Mark The Entered ToDo As:", width=25)
+        todo_number_label.grid(row=1, column=0, sticky="w", pady=5,padx=5)
+
+        self.status_var = tk.StringVar()
+        status_menu = ttk.OptionMenu(self.master, self.status_var, "Not Done", "Done")
+        status_menu.grid(row=1, column=1, pady=1)
+
+        mark_button = ttk.Button(self.master, text="Save", command=self.mark)
+        mark_button.grid(row=2, columnspan=3, pady=20)
+
+    def mark(self):
+        try:
+            todo_number = int(self.todo_number.get())
+        except ValueError:
+            messagebox.showerror("Error", "Invalid input. Please enter a number.", parent=self.master)
+            self.master.lift()
+            return
+
+        try:
+            with open("todos.json", "r") as file:
+                todos = json.load(file)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "File not found", parent=self.master)
+            self.master.lift()
+            return
+
+        if todo_number > len(todos) or todo_number < 1:
+            messagebox.showerror("Error", "Invalid ToDo number", parent=self.master)
+            self.master.lift()
+            return
+
+        todos[todo_number - 1]["status"] = self.status_var.get()
+
+        with open("todos.json", "w") as file:
+            json.dump(todos, file)
+
+        messagebox.showinfo("Success", "Status marked successfully", parent=self.master)
+        self.master.lift()
+        self.master.destroy()
+
 class SetPriorityGui:
     def __init__(self, master):
         self.master = master
@@ -268,60 +330,8 @@ class SetPriorityGui:
         with open("todos.json", "w") as file:
             json.dump(todos, file)
 
-        messagebox.showinfo("Success", "Priority set successfully")
-        self.master.destroy()
-    
-class MarkStatusGui:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Mark ToDo Status")
-        self.master.geometry("380x140")
-        self.master.attributes("-topmost", True)
-        self.master.resizable(False, False)
-
-        todo_number_label = ttk.Label(self.master, text="Enter the ToDo Number:", width=22)
-        todo_number_label.grid(row=0, column=0, sticky="w", pady=5,padx=5)
-        self.todo_number = ttk.Entry(self.master, width=15)
-        self.todo_number.grid(row=0, column=1, padx=5)
-
-        todo_number_label = ttk.Label(self.master, text="Mark The Entered ToDo As:", width=25)
-        todo_number_label.grid(row=1, column=0, sticky="w", pady=5,padx=5)
-
-        self.status_var = tk.StringVar()
-        self.status_var.set("Done")
-        status_menu = ttk.OptionMenu(self.master, self.status_var, "Not Done", "Done")
-        status_menu.grid(row=1, column=1, pady=1)
-
-        mark_button = ttk.Button(self.master, text="Save", command=self.mark)
-        mark_button.grid(row=2, columnspan=3, pady=20)
-
-    def mark(self):
-        try:
-            todo_number = int(self.todo_number.get())
-        except ValueError:
-            messagebox.showerror("Error", "Invalid input. Please enter a number.", parent=self.master)
-            self.master.lift()
-            return
-
-        try:
-            with open("todos.json", "r") as file:
-                todos = json.load(file)
-        except FileNotFoundError:
-            messagebox.showerror("Error", "File not found", parent=self.master)
-            self.master.lift()
-            return
-
-        if todo_number > len(todos) or todo_number < 1:
-            messagebox.showerror("Error", "Invalid ToDo number", parent=self.master)
-            self.master.lift()
-            return
-
-        todos[todo_number - 1]["status"] = self.status_var.get()
-
-        with open("todos.json", "w") as file:
-            json.dump(todos, file)
-
-        messagebox.showinfo("Success", "Status marked successfully")
+        messagebox.showinfo("Success", "Priority set successfully", parent=self.master)
+        self.master.lift()
         self.master.destroy()
 
 class SearchTodoGui:
@@ -350,22 +360,141 @@ class SearchTodoGui:
         todo_name = self.todo_name.get()
         for todo in todos:
             if todo["todo_name"] == todo_name:
-                message = f"ToDo Name: {todo['todo_name']}\nToDo Description: {todo['todo_description']}\nDue Date: {todo['due_date']}"
-                if "status" in todo:
-                    message += f"\nStatus: {todo['status']}"
-                messagebox.showinfo("Results", message)
+                message = f"ToDo Name: {todo['todo_name']}\nDue Date: {todo['due_date']}"
+                if "status" in todo or "priority" in todo:
+                    message += f"\nTodo Priority: {todo.get('priority', 'N/A')}"
+                    message += f"\nTodo Status: {todo.get('status', 'N/A')}"
+
+                else:
+                    message += f"\nTodo Priority: {todo.get('priority', 'N/A')}"
+                    message += f"\nTodo Status: {todo.get('status', 'N/A')}"
+
+
+                messagebox.showinfo("Results", message, parent=self.master)
+                self.master.lift()
                 self.master.destroy()
                 return
+
         messagebox.showerror("Error", "No results found", parent=self.master)
         self.master.lift()
-        self.master.destroy()        
+        self.master.destroy()
+
+class EditTodoGui:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Update Todo")
+        self.master.geometry("500x250")
+        self.master.attributes("-topmost", True)
+        self.master.resizable(False, False)
+        self.master.columnconfigure(0, weight=1, pad=1)
+        self.master.columnconfigure(1, weight=1, pad=1)
+
+        ttk.Label(self.master, text="Enter Todo Name:").grid(row=0, column=0, sticky="w", pady=5)
+        self.todo_name = ttk.Entry(self.master, width=40)
+        self.todo_name.grid(row=0, column=1, padx=5,pady=5)
+
+        new_todo_name_label = ttk.Label(self.master, text="New ToDo Name:", width=20)
+        new_todo_name_label.grid(row=1, column=0, sticky="w",pady=5)
+        self.new_todo_name = ttk.Entry(self.master, width=40)
+        self.new_todo_name.grid(row=1, column=1,padx=5)
+
+        new_due_date_label = ttk.Label(self.master, text="New Due Date:", width=20)
+        new_due_date_label.grid(row=2, column=0, sticky="w",pady=5)
+        self.new_due_date = ttk.Entry(self.master, width=40,)
+        self.new_due_date.grid(row=2, column=1,padx=5)
+
+        new_priority_label = ttk.Label(self.master, text="New Priority:", width=20)
+        new_priority_label.grid(row=3, column=0, sticky="w",pady=5)
+        self.new_priority = ttk.Entry(self.master, width=40,)
+        self.new_priority.grid(row=3, column=1,padx=5)
+
+        new_status_label = ttk.Label(self.master, text="New Status:", width=20)
+        new_status_label.grid(row=4, column=0, sticky="w",pady=10)
+        self.status_var = tk.StringVar()
+        status_menu = ttk.OptionMenu(self.master, self.status_var, "Not Done", "Done")
+        status_menu.grid(row=4, column=1, sticky="w",pady=5,padx=6)
+
+        ttk.Button(self.master, text="Udpate", command=self.search_and_edit_todo).grid(row=5, columnspan=3, pady=20)
+
+
+    def search_and_edit_todo(self):
+
+        #validate inputs 
+
+        if not self.new_todo_name.get().strip():
+            messagebox.showerror("Error", "Please enter a valid name for the ToDo.", parent=self.master)
+            self.master.lift()
+            return
+        if not self.new_due_date.get():
+            messagebox.showerror("Error", "Please enter a due date", parent=self.master)
+            self.master.lift()
+            return
+
+        due_date = self.new_due_date.get()
+        try:
+            due_date = datetime.strptime(due_date, '%d/%m/%Y')
+        except ValueError:
+            messagebox.showerror("Invalid Date", "The date must be in the format DD/MM/YYYY", parent=self.master)
+            self.master.lift()
+            return
+
+        if not self.new_priority.get():
+            messagebox.showwarning("Warning", "You Haven't entered a value for priority", parent=self.master)
+            self.master.lift()
+            new_priority = "N/A"
+            return
+
+        else:
+            try:
+                new_priority = int(self.new_priority.get())
+            except ValueError:
+                messagebox.showerror("Error", "Invalid input. Please enter a number.",parent=self.master)
+                self.master.lift()
+                return
+
+        # Load the ToDo items from the JSON file
         
+        try:
+            with open("todos.json", "r") as file:
+                todos = json.load(file)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "File not found", parent=self.master)
+            self.master.lift()
+            return
+
+        # Search for the ToDo item with the given name
+        todo_name = self.todo_name.get()
+        for todo in todos:
+            if todo['todo_name'] == todo_name:
+                todo['todo_name']= self.new_todo_name.get()
+                todo['due_date']= self.new_due_date.get()
+                if "status" in todo or "priority" in todo:
+                    todo['priority']= new_priority
+                    todo['status']=  self.status_var.get()
+                    if todo['priority']=="":
+                        todo['priority']= "N/A"
+                    if todo['status']=="":
+                        todo['status']= "N/A"                                       
+
+                with open("todos.json", "w") as file:
+                    json.dump(todos, file)
+
+                messagebox.showinfo("Success", "Todo Updated successfully", parent=self.master)
+                self.master.lift()
+                self.master.destroy()
+                return
+                        
+        messagebox.showerror("Error", "Todo not found", parent=self.master)
+        self.master.lift()
+        self.master.destroy()
+
 class TodoListApp:
     def __init__(self, master):
         self.master = master
         self.master.title("Todo List")
         self.master.geometry("1250x600")
         self.master.columnconfigure(0, weight=3)
+        self.master.columnconfigure(1, weight=1)  # added line
         self.master.rowconfigure(0, weight=1)
 
         self.left_frame = LeftFrame(self.master)
