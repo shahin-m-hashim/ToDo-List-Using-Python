@@ -240,6 +240,7 @@ class MarkStatusGui:
         todo_number_label.grid(row=1, column=0, sticky="w", pady=5,padx=5)
 
         self.status_var = tk.StringVar()
+        self.status_var.set("Done")
         status_menu = ttk.OptionMenu(self.master, self.status_var, "Not Done", "Done")
         status_menu.grid(row=1, column=1, pady=1)
 
@@ -410,7 +411,9 @@ class EditTodoGui:
 
         new_status_label = ttk.Label(self.master, text="New Status:", width=20)
         new_status_label.grid(row=4, column=0, sticky="w",pady=10)
+        
         self.status_var = tk.StringVar()
+        self.status_var.set("Done")
         status_menu = ttk.OptionMenu(self.master, self.status_var, "Not Done", "Done")
         status_menu.grid(row=4, column=1, sticky="w",pady=5,padx=6)
 
@@ -421,12 +424,8 @@ class EditTodoGui:
 
         #validate inputs 
 
-        if not self.new_todo_name.get().strip():
+        if not self.todo_name.get().strip():
             messagebox.showerror("Error", "Please enter a valid name for the ToDo.", parent=self.master)
-            self.master.lift()
-            return
-        if not self.new_due_date.get():
-            messagebox.showerror("Error", "Please enter a due date", parent=self.master)
             self.master.lift()
             return
 
@@ -438,11 +437,12 @@ class EditTodoGui:
             self.master.lift()
             return
 
-        if not self.new_priority.get():
+        flag = False
+        if not self.new_priority.get() and not flag:
             messagebox.showwarning("Warning", "You Haven't entered a value for priority", parent=self.master)
             self.master.lift()
+            flag = True
             new_priority = "N/A"
-            return
 
         else:
             try:
@@ -466,15 +466,18 @@ class EditTodoGui:
         todo_name = self.todo_name.get()
         for todo in todos:
             if todo['todo_name'] == todo_name:
-                todo['todo_name']= self.new_todo_name.get()
+                if self.new_todo_name.get():
+                    todo['todo_name'] = self.new_todo_name.get()
+                else:
+                    todo['todo_name'] = self.todo_name.get()
+                
+                if self.new_due_date.get():
+                    todo['due_date'] = self.new_due_date.get()
+
                 todo['due_date']= self.new_due_date.get()
                 if "status" in todo or "priority" in todo:
                     todo['priority']= new_priority
-                    todo['status']=  self.status_var.get()
-                    if todo['priority']=="":
-                        todo['priority']= "N/A"
-                    if todo['status']=="":
-                        todo['status']= "N/A"                                       
+                    todo['status']=  self.status_var.get()                                  
 
                 with open("todos.json", "w") as file:
                     json.dump(todos, file)
