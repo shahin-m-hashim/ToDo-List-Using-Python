@@ -1,0 +1,35 @@
+Performing Black Box Test-
+
+1. Verify that the user interface is functional and easy to navigate. --Done and working
+
+2. Verify that every user validation is functional and working as expected. --Done and working
+
+3. Verify that the task details (Name, Due Date, Priority, and Status) are displayed correctly in the Todo list.  --Done and working
+
+4. Test the functionality of adding a new Todo task to the list. --Done and working
+
+5. Test the functionality of deleting a new Todo task to the list. --Done and working
+
+6. Test the functionality of editing an existing Todo task.  --Done and working
+
+7. Verify that the Todo task can be marked as complete or incomplete.  --Done and working
+
+8. Verify that the Todo task priority can be set.  --Done and working
+
+9. Verify that the Todo app can handle errors and provide meaningful error messages to the user in case of any issues.  --Done and working
+
+10. Test the app with a large number of Todo tasks to verify its performance and stability.  --Done and working
+
+Performing Black Box Test-
+
+1. Verify that the code structure and algorithms are correct. --Done and working
+
+2. Test individual functions and methods to ensure they produce the correct output. --Done and working
+
+3. Verify that error handling and exception management is implemented and working as expected. --Done and working
+
+4. Verify that the UI elements such as buttons, inputs, and displays are working as expected and that the data is displayed correctly. --Done and working
+
+5. Test the code with various test inputs to verify that it can handle different types of data. --Done and working
+
+6. Verify that the app integrates with other systems and services as expected. --Done and working
