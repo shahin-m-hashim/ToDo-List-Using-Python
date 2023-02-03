@@ -72,6 +72,9 @@ class RightFrame(ttk.Frame):
 
         self.edit_button = ttk.Button(self, text="Update Todo", command=self.update_todo)
         self.edit_button.grid(sticky="we")
+        
+        self.edit_button = ttk.Button(self, text="Filter Todo", command=self.filter_todo)
+        self.edit_button.grid(sticky="we")
 
         self.columnconfigure(0, weight=1)
 
@@ -96,8 +99,12 @@ class RightFrame(ttk.Frame):
         SearchTodoGui(search_todo_gui)
 
     def update_todo(self):
-        edit_todo_gui=tk.Toplevel(self)
-        EditTodoGui(edit_todo_gui)
+        update_todo_gui=tk.Toplevel(self)
+        UpdateTodoGui(update_todo_gui)
+        
+    def filter_todo(self):
+        filter_todo_gui=tk.Toplevel(self)
+        FilterTodoGui(filter_todo_gui)
 
 class AddTodoGUI:
     def __init__(self, master):
@@ -380,7 +387,7 @@ class SearchTodoGui:
         self.master.lift()
         self.master.destroy()
 
-class EditTodoGui:
+class UpdateTodoGui:
     def __init__(self, master):
         self.master = master
         self.master.title("Update Todo")
@@ -490,6 +497,37 @@ class EditTodoGui:
         messagebox.showerror("Error", "Todo not found", parent=self.master)
         self.master.lift()
         self.master.destroy()
+
+class FilterTodoGui:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Mark ToDo Priority")
+        self.master.geometry("390x125")
+        self.master.attributes("-topmost", True)
+        self.master.resizable(False, False)
+
+        todo_number_label = ttk.Label(self.master, text="Filter ToDo's Based on:", width=20, font=(8))
+        todo_number_label.grid(row=0, column=0, sticky="w", pady=5,padx=10)
+
+        self.status_var = tk.StringVar()
+        self.status_var.set("Done")
+        status_menu = ttk.OptionMenu(self.master, self.status_var, "Not Done", "Done")
+        status_menu.grid(row=0, column=1, sticky="w",pady=5,padx=6)
+        mark_button = ttk.Button(self.master, text="Filter Todo's", command=self.filter)
+        mark_button.grid(row=1, columnspan=3, pady=20)
+
+    def load_todos(self):
+        with open("todos.json", "r") as file:
+            return json.load(file)
+
+    def filter(self):
+        todos = self.load_todos()
+        filtered_todos = [todo for todo in todos if 'status' in todo and todo['status'] == self.status_var.get()]
+        if filtered_todos:
+            todos_list = [f"{todo['id']}. Name: {todo['todo_name']}, Due Date: {todo['due_date']}, Priority: {todo.get('priority', 'N/A')}, Status: {todo['status']}" for todo in filtered_todos]
+            messagebox.showinfo("Filtered Todo's", "\n".join(todos_list), parent=self.master)
+            self.master.lift()
+            return
 
 class TodoListApp:
     def __init__(self, master):
