@@ -20,11 +20,10 @@ class LeftFrame(ttk.Frame):
             fieldbackground="yellow") #set row gap and color
 
         self.todo_list = ttk.Treeview(self, columns=("Name", "Due Date", "Priority", "Status"))
-        self.scrollbar = ttk.Scrollbar(self, command=self.todo_list.yview)
-        self.scrollbar = tk.Scrollbar(self, orient="vertical", width=17)
-        self.todo_list.configure(yscrollcommand=self.scrollbar.set)
-        self.todo_list.grid(row=0, column=0, sticky="nswe")
+        self.scrollbar = tk.Scrollbar(self, command=self.todo_list.yview, orient="vertical", width=20)
         self.scrollbar.grid(row=0, column=1, sticky="ns")
+        self.todo_list.grid(row=0, column=0, sticky="nswe")
+        self.todo_list.configure(yscrollcommand=self.scrollbar.set)
         self.todo_list.column("#0", anchor="center")
         self.todo_list.column("Name", anchor="center")
         self.todo_list.column("Due Date", anchor="center")
@@ -75,8 +74,8 @@ class RightFrame(ttk.Frame):
         self.delete_button = ttk.Button(self, text="Delete Todo", command=self.delete_todo, style="Blue.TButton")
         self.delete_button.grid(sticky="we")
 
-        self.mark_status_button = ttk.Button(self, text="Set Priority", command=self.set_priority, style="Blue.TButton")
-        self.mark_status_button.grid(sticky="we")
+        self.priority_button = ttk.Button(self, text="Set Priority", command=self.set_priority, style="Blue.TButton")
+        self.priority_button.grid(sticky="we")
 
         self.mark_status_button = ttk.Button(self, text="Mark Status", command=self.mark_status, style="Blue.TButton")
         self.mark_status_button.grid(sticky="we")
@@ -84,15 +83,15 @@ class RightFrame(ttk.Frame):
         self.search_button = ttk.Button(self, text="Search Todo", command=self.search_todo, style="Blue.TButton")
         self.search_button.grid(sticky="we")
 
-        self.edit_button = ttk.Button(self, text="Update Todo", command=self.update_todo, style="Blue.TButton")
-        self.edit_button.grid(sticky="we")
+        self.update_button = ttk.Button(self, text="Update Todo", command=self.update_todo, style="Blue.TButton")
+        self.update_button.grid(sticky="we")
         
-        self.edit_button = ttk.Button(self, text="Filter Todo", command=self.filter_todo, style="Blue.TButton")
-        self.edit_button.grid(sticky="we")
+        self.filter_button = ttk.Button(self, text="Filter Todo", command=self.filter_todo, style="Blue.TButton")
+        self.filter_button.grid(sticky="we")
         
         style.configure("red.TButton", font=("Open Sans", 15), background="red")
-        self.edit_button = ttk.Button(self, text="HELP", command=self.todo_help, style="red.TButton")
-        self.edit_button.grid(sticky="we")
+        self.help_button = ttk.Button(self, text="HELP", command=self.todo_help, style="red.TButton")
+        self.help_button.grid(sticky="we")
 
         self.columnconfigure(0, weight=1)
 
@@ -125,14 +124,9 @@ class RightFrame(ttk.Frame):
         FilterTodoGui(filter_todo_gui)
     
     def todo_help(self):
-        try:
-            with open("todo_help.txt", "r") as file:
-                help_content = file.read()
-                messagebox.showinfo("Help", help_content)
-        except FileNotFoundError:
-            messagebox.showerror("Error", "Readme File Not found", parent=self.master)
-            self.master.lift()
-            return
+        messagebox.showinfo("Message", "Kindly Refer The Readme File in Github Repository", parent=self.master)
+        self.master.lift()
+        return
 
 class AddTodoGUI:
     def __init__(self, master):
@@ -197,7 +191,6 @@ class AddTodoGUI:
 
         with open("todos.json", "w") as file:
             json.dump(todos, file)
-
 
         messagebox.showinfo("Success", "ToDo Added successfully", parent=self.master)
         self.master.lift()
@@ -597,7 +590,7 @@ class TodoListApp:
     def __init__(self, master):
         self.master = master
         self.master.title("Todo List")
-        self.master.geometry("1300x700")
+        self.master.geometry("1200x700")
         self.master.columnconfigure(0, weight=3)
         self.master.columnconfigure(1, weight=1)  # added line
         self.master.rowconfigure(0, weight=1)
