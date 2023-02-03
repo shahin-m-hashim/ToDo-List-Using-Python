@@ -136,11 +136,11 @@ class AddTodoGUI:
     def save(self):
 
         if not self.todo_name.get().strip():
-            messagebox.showerror("Error", "Please enter a name for the ToDo.", parent=self.master)
+            messagebox.showerror("Error", "Please enter a ToDo Name.", parent=self.master)
             self.master.lift()
             return
         if not self.due_date.get():
-            messagebox.showerror("Error", "Please enter a due date", parent=self.master)
+            messagebox.showerror("Error", "Please enter a Due Date", parent=self.master)
             self.master.lift()
             return
 
@@ -192,6 +192,7 @@ class DeleteTodoGui():
         delete_button.grid(row=3, columnspan=2, pady=10)
 
     def delete(self):
+        
         todo_number_str = self.todo_number.get()
         if not todo_number_str:
             messagebox.showerror("Error", "Please enter a ToDo number", parent=self.master)
@@ -214,7 +215,7 @@ class DeleteTodoGui():
             return
 
         if todo_number > len(todos) or todo_number < 1:
-            messagebox.showerror("Error", "Invalid ToDo number", parent=self.master)
+            messagebox.showerror("Error", "ToDo Not Found", parent=self.master)
             self.master.lift()
             return
 
@@ -255,10 +256,17 @@ class MarkStatusGui:
         mark_button.grid(row=2, columnspan=3, pady=20)
 
     def mark(self):
+        
+        todo_number_str = self.todo_number.get()
+        if not todo_number_str:
+            messagebox.showerror("Error", "Please enter a ToDo number", parent=self.master)
+            self.master.lift()
+            return
+
         try:
-            todo_number = int(self.todo_number.get())
+            todo_number = int(todo_number_str)
         except ValueError:
-            messagebox.showerror("Error", "Invalid input. Please enter a number.", parent=self.master)
+            messagebox.showerror("Error", "Invalid ToDo number", parent=self.master)
             self.master.lift()
             return
 
@@ -268,10 +276,10 @@ class MarkStatusGui:
         except FileNotFoundError:
             messagebox.showerror("Error", "File not found", parent=self.master)
             self.master.lift()
-            return
+            self.master.destroy()
 
         if todo_number > len(todos) or todo_number < 1:
-            messagebox.showerror("Error", "Invalid ToDo number", parent=self.master)
+            messagebox.showerror("Error", "ToDo Not Found", parent=self.master)
             self.master.lift()
             return
 
@@ -306,10 +314,17 @@ class SetPriorityGui:
         mark_button.grid(row=2, columnspan=3, pady=20)
 
     def set(self):
+        
+        todo_number_str = self.todo_number.get()
+        if not todo_number_str:
+            messagebox.showerror("Error", "Please enter a ToDo number", parent=self.master)
+            self.master.lift()
+            return
+
         try:
-            todo_number = int(self.todo_number.get())
+            todo_number = int(todo_number_str)
         except ValueError:
-            messagebox.showerror("Error", "Invalid input. Please enter a number.", parent=self.master)
+            messagebox.showerror("Error", "Invalid ToDo number", parent=self.master)
             self.master.lift()
             return
 
@@ -317,19 +332,30 @@ class SetPriorityGui:
             with open("todos.json", "r") as file:
                 todos = json.load(file)
         except FileNotFoundError:
-            messagebox.showerror("Error", "File not found",parent=self.master)
+            messagebox.showerror("Error", "File not found", parent=self.master)
+            self.master.lift()
+            self.master.destroy()
+
+        if todo_number > len(todos) or todo_number < 1:
+            messagebox.showerror("Error", "ToDo Not Found", parent=self.master)
             self.master.lift()
             return
 
-        if todo_number > len(todos) or todo_number < 1:
-            messagebox.showerror("Error", "Invalid ToDo number",parent=self.master)
+        todo_priority_str = self.todo_priority.get()
+        if not todo_priority_str:
+            messagebox.showerror("Error", "Please enter a Priority", parent=self.master)
             self.master.lift()
             return
 
         try:
-            todo_priority = int(self.todo_priority.get())
+            todo_priority = int(todo_priority_str)
         except ValueError:
-            messagebox.showerror("Error", "Invalid input. Please enter a number.",parent=self.master)
+            messagebox.showerror("Error", "Invalid Priority", parent=self.master)
+            self.master.lift()
+            return
+        
+        if todo_priority > 100 or todo_priority < 1:
+            messagebox.showerror("Error", "Priority should be b/w 1-100",parent=self.master)
             self.master.lift()
             return
 
@@ -357,6 +383,12 @@ class SearchTodoGui:
         ttk.Button(self.master, text="Search", command=self.search).grid(row=2, columnspan=3, pady=20)
 
     def search(self):
+        
+        if not self.todo_name.get().strip():
+            messagebox.showerror("Error", "Please enter a ToDo Name.", parent=self.master)
+            self.master.lift()
+            return
+        
         try:
             with open("todos.json", "r") as file:
                 todos = json.load(file)
@@ -372,7 +404,6 @@ class SearchTodoGui:
                 if "status" in todo or "priority" in todo:
                     message += f"\nTodo Priority: {todo.get('priority', 'N/A')}"
                     message += f"\nTodo Status: {todo.get('status', 'N/A')}"
-
                 else:
                     message += f"\nTodo Priority: {todo.get('priority', 'N/A')}"
                     message += f"\nTodo Status: {todo.get('status', 'N/A')}"
@@ -432,7 +463,7 @@ class UpdateTodoGui:
         #validate inputs 
 
         if not self.todo_name.get().strip():
-            messagebox.showerror("Error", "Please enter a valid name for the ToDo.", parent=self.master)
+            messagebox.showerror("Error", "Please Enter a ToDo Name.", parent=self.master)
             self.master.lift()
             return
 
@@ -455,7 +486,12 @@ class UpdateTodoGui:
             try:
                 new_priority = int(self.new_priority.get())
             except ValueError:
-                messagebox.showerror("Error", "Invalid input. Please enter a number.",parent=self.master)
+                messagebox.showerror("Error", "Please enter a valid priority.",parent=self.master)
+                self.master.lift()
+                return
+            
+            if new_priority > 100 or new_priority < 1:
+                messagebox.showerror("Error", "Priority should be b/w 1-100",parent=self.master)
                 self.master.lift()
                 return
 
@@ -496,7 +532,7 @@ class UpdateTodoGui:
                         
         messagebox.showerror("Error", "Todo not found", parent=self.master)
         self.master.lift()
-        self.master.destroy()
+        return
 
 class FilterTodoGui:
     def __init__(self, master):
