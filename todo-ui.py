@@ -42,7 +42,8 @@ class LeftFrame(ttk.Frame):
             with open("todos.json", "r") as file:
                 todos = json.load(file)
         except FileNotFoundError:
-            self.todo_list.insert("", "end", text="You don't have any ToDo's yet, wish to make some?")
+            no_todos_label = tk.Label(self, text="You Don't Have Any ToDo's Yet, Wish To Make Some?", font=("Helvetica", 50), wraplength=800, justify="center", padx=30, pady=30, fg="red", bg="#FAFA33")
+            no_todos_label.place(relx=0.5, rely=0.5, anchor="center")
             return
 
         for i, todo in enumerate(todos):
