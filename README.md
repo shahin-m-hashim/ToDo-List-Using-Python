@@ -3,6 +3,8 @@
 
 * The program uses two frames LeftFrame and RightFrame. The LeftFrame, displays ToDo items that are loaded from a JSON file. The RightFrame on the other hand, creates several buttons to perform operations on the ToDo items such as adding, deleting, setting priority, marking status... etc. However,it still does not handle database storage like Sql, but the ToDo and related Information will not be lost once the program is closed.
 
+![An example image](https://github.com/shahin-m-hashim/ToDo-List-Using-Python/blob/main/todo_quick_reference.png)
+
 ## Features
 
 * User-friendly interface.
