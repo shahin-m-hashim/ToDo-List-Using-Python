@@ -16,9 +16,15 @@ Performing Black Box Test-
 
 8. Verify that the Todo task priority can be set.  --Done and working
 
-9. Verify that the Todo app can handle errors and provide meaningful error messages to the user in case of any issues.  --Done and working
+9. Test the functionality of Searching an existing Todo task.  --Done and working
 
-10. Test the app with a large number of Todo tasks to verify its performance and stability.  --Done and working
+10. Test the functionality of editing an existing Todo task.  --Done and working
+
+11. Test the functionality of filtering an existing Todos based on status.  --Done and working
+
+12. Verify that the Todo app can handle errors and provide meaningful error messages to the user in case of any issues.  --Done and working
+
+13. Test the app with a large number of Todo tasks to verify its performance and stability.  --Done and working
 
 Performing Black Box Test-
 
