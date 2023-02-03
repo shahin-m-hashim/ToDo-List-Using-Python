@@ -192,7 +192,7 @@ class AddTodoGUI:
         with open("todos.json", "w") as file:
             json.dump(todos, file)
 
-        messagebox.showinfo("Success", "ToDo Added successfully", parent=self.master)
+        messagebox.showinfo("Success", "ToDo Added successfully\nPlease Rerun the program to see the updates in Left Frame", parent=self.master)
         self.master.lift()
         self.master.destroy()
 
@@ -248,7 +248,7 @@ class DeleteTodoGui():
         with open("todos.json", "w") as file:
             json.dump(todos, file)
 
-        messagebox.showinfo("Success", "ToDo deleted successfully", parent=self.master)
+        messagebox.showinfo("Success", "ToDo deleted successfully\nPlease Rerun the program to see the updates in Left Frame", parent=self.master)
         self.master.lift()
         self.master.destroy()
 
@@ -309,7 +309,7 @@ class MarkStatusGui:
         with open("todos.json", "w") as file:
             json.dump(todos, file)
 
-        messagebox.showinfo("Success", "Status marked successfully", parent=self.master)
+        messagebox.showinfo("Success", "Status marked successfully\nPlease Rerun the program to see the updates in Left Frame", parent=self.master)
         self.master.lift()
         self.master.destroy()
 
@@ -385,7 +385,7 @@ class SetPriorityGui:
         with open("todos.json", "w") as file:
             json.dump(todos, file)
 
-        messagebox.showinfo("Success", "Priority set successfully", parent=self.master)
+        messagebox.showinfo("Success", "Priority set successfully\nPlease Rerun the program to see the updates in Left Frame", parent=self.master)
         self.master.lift()
         self.master.destroy()
 
@@ -546,7 +546,7 @@ class UpdateTodoGui:
                 with open("todos.json", "w") as file:
                     json.dump(todos, file)
 
-                messagebox.showinfo("Success", "Todo Updated successfully", parent=self.master)
+                messagebox.showinfo("Success", "Todo Updated successfully\nPlease Rerun the program to see the updates in Left Frame", parent=self.master)
                 self.master.lift()
                 self.master.destroy()
                 return
