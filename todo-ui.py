@@ -18,9 +18,13 @@ class LeftFrame(ttk.Frame):
             foreground="red", 
             background="yellow",
             fieldbackground="yellow") #set row gap and color
-        
+
         self.todo_list = ttk.Treeview(self, columns=("Name", "Due Date", "Priority", "Status"))
-        self.todo_list.grid(sticky="nswe")
+        self.scrollbar = ttk.Scrollbar(self, command=self.todo_list.yview)
+        self.scrollbar = tk.Scrollbar(self, orient="vertical", width=17)
+        self.todo_list.configure(yscrollcommand=self.scrollbar.set)
+        self.todo_list.grid(row=0, column=0, sticky="nswe")
+        self.scrollbar.grid(row=0, column=1, sticky="ns")
         self.todo_list.column("#0", anchor="center")
         self.todo_list.column("Name", anchor="center")
         self.todo_list.column("Due Date", anchor="center")
@@ -61,26 +65,33 @@ class RightFrame(ttk.Frame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.grid(row=0, column=1, sticky="nswe")
+        style = ttk.Style()
+        style.configure("Blue.TButton", font=('Helvetica', 13), background="#4681f4")
 
-        self.add_button = ttk.Button(self, text="Add Todo", command=self.add_todo)
+
+        self.add_button = ttk.Button(self, text="Add Todo", command=self.add_todo, style="Blue.TButton")
         self.add_button.grid(sticky="we")
 
-        self.delete_button = ttk.Button(self, text="Delete Todo", command=self.delete_todo)
+        self.delete_button = ttk.Button(self, text="Delete Todo", command=self.delete_todo, style="Blue.TButton")
         self.delete_button.grid(sticky="we")
 
-        self.mark_status_button = ttk.Button(self, text="Set Priority", command=self.set_priority)
+        self.mark_status_button = ttk.Button(self, text="Set Priority", command=self.set_priority, style="Blue.TButton")
         self.mark_status_button.grid(sticky="we")
 
-        self.mark_status_button = ttk.Button(self, text="Mark Status", command=self.mark_status)
+        self.mark_status_button = ttk.Button(self, text="Mark Status", command=self.mark_status, style="Blue.TButton")
         self.mark_status_button.grid(sticky="we")
 
-        self.search_button = ttk.Button(self, text="Search Todo", command=self.search_todo)
+        self.search_button = ttk.Button(self, text="Search Todo", command=self.search_todo, style="Blue.TButton")
         self.search_button.grid(sticky="we")
 
-        self.edit_button = ttk.Button(self, text="Update Todo", command=self.update_todo)
+        self.edit_button = ttk.Button(self, text="Update Todo", command=self.update_todo, style="Blue.TButton")
         self.edit_button.grid(sticky="we")
         
-        self.edit_button = ttk.Button(self, text="Filter Todo", command=self.filter_todo)
+        self.edit_button = ttk.Button(self, text="Filter Todo", command=self.filter_todo, style="Blue.TButton")
+        self.edit_button.grid(sticky="we")
+        
+        style.configure("red.TButton", font=("Open Sans", 15), background="red")
+        self.edit_button = ttk.Button(self, text="HELP", command=self.todo_help, style="red.TButton")
         self.edit_button.grid(sticky="we")
 
         self.columnconfigure(0, weight=1)
@@ -112,6 +123,16 @@ class RightFrame(ttk.Frame):
     def filter_todo(self):
         filter_todo_gui=tk.Toplevel(self)
         FilterTodoGui(filter_todo_gui)
+    
+    def todo_help(self):
+        try:
+            with open("todo_help.txt", "r") as file:
+                help_content = file.read()
+                messagebox.showinfo("Help", help_content)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "Readme File Not found", parent=self.master)
+            self.master.lift()
+            return
 
 class AddTodoGUI:
     def __init__(self, master):
@@ -571,7 +592,7 @@ class FilterTodoGui:
             messagebox.showinfo("Filtered Todo's", "\n".join(todos_list), parent=self.master)
             self.master.lift()
             return
-
+            
 class TodoListApp:
     def __init__(self, master):
         self.master = master
